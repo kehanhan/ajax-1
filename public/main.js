@@ -1,3 +1,4 @@
+let n = 1;
 console.log("This is main.js");
 getHTML.onclick = () => {
   const requestHTML = new XMLHttpRequest();
@@ -78,4 +79,23 @@ getJSON.onclick = () => {
     }
   };
   requestJSON.send();
+};
+getPage.onclick = () => {
+  const requestPage = new XMLHttpRequest();
+  requestPage.open("GET", `/page${n + 1}.json`);
+  requestPage.onreadystatechange = () => {
+    if (requestPage.readyState === 4 && requestPage.status === 200) {
+      const page2 = requestPage.response;
+      console.log(page2);
+      const array = JSON.parse(page2);
+      console.log(array);
+      array.forEach((item) => {
+        const li = document.createElement("li");
+        li.textContent = item.id;
+        pageList.appendChild(li);
+      });
+      n += 1;
+    }
+  };
+  requestPage.send();
 };
