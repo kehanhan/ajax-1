@@ -1,101 +1,85 @@
 let n = 1;
 console.log("This is main.js");
+
+const ajax = (method, url, success) => {
+  const request = new XMLHttpRequest();
+  request.open(method, url);
+  request.onreadystatechange = () => {
+    if (request.readyState === 4) {
+      if (request.status < 400) {
+        success.call(null, request);
+      } else {
+        console.log("失败了，状态码：" + request.status);
+      }
+    }
+  };
+  request.send();
+};
+
 getHTML.onclick = () => {
-  const requestHTML = new XMLHttpRequest();
-  requestHTML.open("GET", "/3.html");
-  requestHTML.onload = () => {
-    console.log("success");
+  const htmlHandler = (request) => {
+    console.log("成功");
     const divTag = document.createElement("div");
-    const divContent = requestHTML.response;
-    console.log(divContent);
-    divTag.innerHTML = divContent;
+    divTag.innerHTML = request.response;
     document.body.appendChild(divTag);
   };
-  requestHTML.onerror = () => {
-    console.log("failed");
-  };
-  requestHTML.send();
+  ajax("GET", "/3.html", htmlHandler);
 };
+
 getCSS.onclick = () => {
-  const requestCSS = new XMLHttpRequest();
-  requestCSS.open("GET", "/style.css");
-  requestCSS.onload = () => {
-    console.log("success");
+  const cssHandler = (request) => {
+    console.log("成功");
     const styleTag = document.createElement("style");
-    const styleContent = requestCSS.response;
-    console.log(styleContent);
-    styleTag.innerHTML = styleContent;
+    styleTag.innerHTML = request.response;
     document.head.appendChild(styleTag);
   };
-  requestCSS.onerror = () => {
-    console.log("failed");
-  };
-  requestCSS.send();
+  ajax("GET", "/style.css", cssHandler);
 };
 
 getJS.onclick = () => {
-  const requestJS = new XMLHttpRequest();
-  requestJS.open("GET", "/2.js");
-  requestJS.onload = () => {
+  const jsHandler = (request) => {
     console.log("success");
     const scriptTag = document.createElement("script");
-    const scriptContent = requestJS.response;
-    console.log(scriptContent);
-    scriptTag.innerHTML = scriptContent;
+    scriptTag.innerHTML = request.response;
     document.body.appendChild(scriptTag);
   };
-
-  requestJS.onerror = () => {
-    console.log("failed");
-  };
-  requestJS.send();
+  ajax("GET", "/2.js", jsHandler);
 };
 
 getXML.onclick = () => {
-  const requestXML = new XMLHttpRequest();
-  requestXML.open("GET", "/4.xml");
-  requestXML.onreadystatechange = () => {
-    if (requestXML.readyState === 4 && requestXML.status === 200) {
-      const xmlContent = requestXML.responseXML;
-      // console.log(typeof xmlContent);
-      // console.log(xmlContent);
-      console.log(
-        xmlContent.getElementsByTagName("warning")[0].textContent.trim()
-      );
-    }
+  const xmlHandler = (request) => {
+    const xmlContent = request.responseXML;
+    // console.log(typeof xmlContent);
+    // console.log(xmlContent);
+    console.log(
+      xmlContent.getElementsByTagName("warning")[0].textContent.trim()
+    );
   };
-  requestXML.send();
+  ajax("GET", "/4.xml", xmlHandler);
 };
 
 getJSON.onclick = () => {
-  const requestJSON = new XMLHttpRequest();
-  requestJSON.open("GET", "/5.json");
-  requestJSON.onreadystatechange = () => {
-    if (requestJSON.readyState === 4 && requestJSON.status === 200) {
-      const jsonContent = JSON.parse(requestJSON.response);
-      console.log(jsonContent);
-      console.log(typeof jsonContent);
-      myName.textContent = "Hello " + jsonContent.username + "!";
-    }
+  const jsonHandler = (request) => {
+    const jsonContent = JSON.parse(request.response);
+    // console.log(jsonContent);
+    // console.log(typeof jsonContent);
+    myName.textContent = "Hello " + jsonContent.username + "!";
   };
-  requestJSON.send();
+  ajax("GET", "/5.json", jsonHandler);
 };
+
 getPage.onclick = () => {
-  const requestPage = new XMLHttpRequest();
-  requestPage.open("GET", `/page${n + 1}.json`);
-  requestPage.onreadystatechange = () => {
-    if (requestPage.readyState === 4 && requestPage.status === 200) {
-      const page2 = requestPage.response;
-      console.log(page2);
-      const array = JSON.parse(page2);
-      console.log(array);
-      array.forEach((item) => {
-        const li = document.createElement("li");
-        li.textContent = item.id;
-        pageList.appendChild(li);
-      });
-      n += 1;
-    }
+  const pageHandler = (request) => {
+    const page = request.response;
+    // console.log(page);
+    const array = JSON.parse(page);
+    // console.log(array);
+    array.forEach((item) => {
+      const li = document.createElement("li");
+      li.textContent = item.id;
+      pageList.appendChild(li);
+    });
+    n += 1;
   };
-  requestPage.send();
+  ajax("GET", `/page${n + 1}.json`, pageHandler);
 };
